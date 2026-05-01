@@ -1,0 +1,247 @@
+:root {
+    color-scheme: light dark;
+    --background: rgb(246 246 247);
+    --text: rgb(28 28 30);
+    --secondary-text: rgb(99 99 102);
+    --separator: rgb(198 198 200);
+    --control-background: rgb(238 238 240);
+    --control-fill: rgb(255 255 255);
+    --control-fill-hover: rgb(250 250 251);
+    --control-fill-active: rgb(235 235 237);
+    --accent: rgb(0 122 255);
+    --accent-text: rgb(255 255 255);
+    --error: rgb(196 40 40);
+    --error-background: rgb(196 40 40 / 0.08);
+    --error-border: rgb(196 40 40 / 0.20);
+    --focus-ring: color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: rgb(38 38 40);
+        --text: rgb(242 242 247);
+        --secondary-text: rgb(174 174 178);
+        --separator: rgb(86 86 89);
+        --control-background: rgb(48 48 51);
+        --control-fill: rgb(72 72 74);
+        --control-fill-hover: rgb(82 82 84);
+        --control-fill-active: rgb(62 62 64);
+        --accent: rgb(10 132 255);
+        --accent-text: rgb(255 255 255);
+        --error: rgb(255 105 97);
+        --error-background: rgb(255 105 97 / 0.12);
+        --error-border: rgb(255 105 97 / 0.26);
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--background);
+}
+
+body {
+    width: 260px;
+    margin: 0;
+    background: var(--background);
+    color: var(--text);
+    font: 13px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+}
+
+.popup {
+    padding: 10px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 18px;
+    margin: 0 2px 8px;
+}
+
+.title {
+    color: var(--secondary-text);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.actions {
+    display: grid;
+    gap: 8px;
+}
+
+.capture-option {
+    appearance: none;
+    font: inherit;
+    cursor: default;
+    outline: none;
+}
+
+.capture-option {
+    width: 100%;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0 12px;
+    border: 1px solid var(--separator);
+    border-radius: 7px;
+    background: linear-gradient(var(--control-fill), var(--control-fill-active));
+    color: var(--text);
+    font-weight: 600;
+    text-align: left;
+    box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.36),
+        0 1px 1px rgb(0 0 0 / 0.10);
+}
+
+.capture-option span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+kbd {
+    min-width: 38px;
+    flex: 0 0 auto;
+    padding: 1px 5px 2px;
+    border: 1px solid color-mix(in srgb, var(--separator) 82%, transparent);
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--control-fill) 68%, transparent);
+    color: var(--secondary-text);
+    font: 11px/1.2 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    text-align: center;
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.05);
+}
+
+.capture-option.primary {
+    border-color: color-mix(in srgb, var(--accent) 68%, black);
+    background: linear-gradient(color-mix(in srgb, var(--accent) 86%, white), var(--accent));
+    color: var(--accent-text);
+}
+
+.capture-option.primary kbd {
+    border-color: rgb(255 255 255 / 0.35);
+    background: rgb(255 255 255 / 0.18);
+    color: rgb(255 255 255 / 0.88);
+}
+
+.capture-option:hover:not(:disabled) {
+    background: linear-gradient(var(--control-fill-hover), var(--control-fill-active));
+}
+
+.capture-option.primary:hover:not(:disabled) {
+    background: linear-gradient(color-mix(in srgb, var(--accent) 92%, white), var(--accent));
+}
+
+.capture-option:active:not(:disabled) {
+    background: var(--control-fill-active);
+    box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.12);
+}
+
+.capture-option.primary:active:not(:disabled) {
+    background: var(--accent);
+}
+
+.capture-option:focus-visible {
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.capture-option:disabled {
+    opacity: 0.48;
+}
+
+.status {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.status-row {
+    min-height: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 2px 0;
+}
+
+.status {
+    color: var(--secondary-text);
+}
+
+.error {
+    display: grid;
+    gap: 3px;
+    margin-top: 8px;
+    padding: 8px 9px;
+    border: 1px solid var(--error-border);
+    border-radius: 7px;
+    background: var(--error-background);
+    color: var(--error);
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.error strong {
+    color: var(--error);
+    font-weight: 650;
+}
+
+.error span {
+    color: color-mix(in srgb, var(--error) 72%, var(--text));
+}
+
+.error-action {
+    appearance: none;
+    justify-self: start;
+    min-height: 24px;
+    margin-top: 3px;
+    padding: 0 8px;
+    border: 1px solid var(--error-border);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--error-background) 68%, var(--control-fill));
+    color: var(--error);
+    font: inherit;
+    font-weight: 650;
+}
+
+.error-action:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--error-background) 84%, var(--control-fill));
+}
+
+.error-action:disabled {
+    opacity: 0.48;
+}
+
+.status:empty,
+.error[hidden],
+.error-action[hidden] {
+    display: none;
+}
+
+.spinner {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 auto;
+    border: 1.5px solid color-mix(in srgb, var(--secondary-text) 25%, transparent);
+    border-top-color: var(--secondary-text);
+    border-radius: 50%;
+    animation: spin 800ms linear infinite;
+}
+
+.spinner[hidden] {
+    display: none;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

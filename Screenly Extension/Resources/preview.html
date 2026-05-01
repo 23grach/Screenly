@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Screenly Preview</title>
+    <link rel="stylesheet" href="preview.css">
+    <script type="module" src="preview.js"></script>
+</head>
+<body>
+    <main class="preview-shell">
+        <header class="toolbar">
+            <div class="title-group">
+                <h1>Screenly</h1>
+                <p id="metadata" class="metadata"></p>
+            </div>
+            <div class="actions">
+                <button type="button" id="export-button" class="primary" disabled>Export PNG</button>
+                <button type="button" id="copy-button" disabled>Copy</button>
+            </div>
+        </header>
+
+        <section class="stage" aria-live="polite">
+            <div id="loading" class="loading">
+                <div class="spinner" aria-hidden="true"></div>
+                <p id="status" class="status">Loading preview...</p>
+            </div>
+            <div id="error" class="error" role="alert" hidden>
+                <strong id="error-title"></strong>
+                <span id="error-detail"></span>
+            </div>
+            <img id="preview-image" alt="Captured screenshot preview">
+        </section>
+    </main>
+</body>
+</html>

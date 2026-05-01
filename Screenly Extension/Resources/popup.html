@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="popup.css">
+    <script type="module" src="popup.js"></script>
+</head>
+<body>
+    <main class="popup">
+        <div class="header">
+            <span class="title">Screenly</span>
+        </div>
+
+        <div class="actions" aria-label="Capture actions">
+            <button type="button" class="capture-option primary" data-mode="fullPage">
+                <span>FullPage Screenshot</span>
+                <kbd>⌘⌥1</kbd>
+            </button>
+            <button type="button" class="capture-option" data-mode="visible">
+                <span>Visible Area</span>
+                <kbd>⌘⌥2</kbd>
+            </button>
+        </div>
+
+        <div class="status-row">
+            <span id="spinner" class="spinner" aria-hidden="true" hidden></span>
+            <p id="status" class="status" role="status" aria-live="polite"></p>
+        </div>
+        <div id="error" class="error" role="alert" hidden>
+            <strong id="error-title"></strong>
+            <span id="error-detail"></span>
+            <button type="button" id="error-action" class="error-action" hidden></button>
+        </div>
+    </main>
+</body>
+</html>

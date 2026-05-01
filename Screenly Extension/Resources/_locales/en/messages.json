@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "Screenly",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Capture full-page or visible-area screenshots from Safari.",
+        "description": "Description of what the extension does."
+    }
+}
