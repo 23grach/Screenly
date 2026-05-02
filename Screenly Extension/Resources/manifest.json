@@ -48,13 +48,13 @@
     "commands": {
         "capture-full-page": {
             "suggested_key": {
-                "mac": "Command+Alt+1"
+                "mac": "Command+MacCtrl+1"
             },
             "description": "Capture a full-page screenshot"
         },
         "capture-visible-area": {
             "suggested_key": {
-                "mac": "Command+Alt+2"
+                "mac": "Command+MacCtrl+2"
             },
             "description": "Capture a visible-area screenshot"
         }
