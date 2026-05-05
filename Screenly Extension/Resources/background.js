@@ -11,8 +11,24 @@ const MAX_CANVAS_PIXELS = 120_000_000;
 const MAX_LONG_EDGE = 65_000;
 const SCROLL_SETTLE_MS = 260;
 const TILE_OVERLAP_RATIO = 0.12;
+const IDLE_ACTION_ICON = "images/toolbar-icon.svg";
+const LOADER_ACTION_ICONS = [
+    "images/toolbar-loader-0.svg",
+    "images/toolbar-loader-1.svg",
+    "images/toolbar-loader-2.svg",
+    "images/toolbar-loader-3.svg",
+    "images/toolbar-loader-4.svg",
+    "images/toolbar-loader-5.svg",
+    "images/toolbar-loader-6.svg",
+    "images/toolbar-loader-7.svg"
+];
+const LOADER_FRAME_MS = 90;
 
 let activeCapture = null;
+let loaderIconTimeout = null;
+let loaderIconRunId = 0;
+let loaderIconFrame = 0;
+let loaderIconUpdatePromise = Promise.resolve();
 
 browser.runtime.onMessage.addListener((message) => {
     if (!message || message.type !== "START_CAPTURE") {
@@ -47,20 +63,11 @@ if (browser.commands?.onCommand) {
 }
 
 async function runShortcutCapture(mode) {
-    let tab = null;
-
     try {
-        tab = await activeTab();
-        validateCapturableTab(tab);
-        await showPageFeedback(tab.id, "capturing", "Capturing");
-        await startCapture(mode, { tab });
-        await hidePageFeedback(tab.id);
+        await startCapture(mode);
     } catch (error) {
         const normalized = normalizeError(error, "capture_failed");
         console.error("Screenly shortcut capture failed", normalized);
-        if (tab?.id) {
-            await showPageFeedback(tab.id, "error", userMessageForCode(normalized.code));
-        }
     }
 }
 
@@ -79,6 +86,7 @@ async function startCapture(mode, options = {}) {
     let prepared = false;
 
     try {
+        await setCaptureIndicator(true);
         emitProgress("Preparing page...");
         await pingContentScript(tab.id);
         const preparation = await sendTabMessage(tab.id, { type: "SCREENLY_PREPARE_CAPTURE" });
@@ -105,6 +113,10 @@ async function startCapture(mode, options = {}) {
             width: result.width,
             height: result.height
         };
+    } catch (error) {
+        const normalized = normalizeError(error, "capture_failed");
+        await showPageFeedback(tab.id, "error", userMessageForCode(normalized.code));
+        throw normalized;
     } finally {
         if (prepared) {
             try {
@@ -114,6 +126,7 @@ async function startCapture(mode, options = {}) {
             }
         }
         activeCapture = null;
+        await setCaptureIndicator(false);
     }
 }
 
@@ -129,13 +142,68 @@ async function showPageFeedback(tabId, state, message) {
     }
 }
 
-async function hidePageFeedback(tabId) {
+async function setCaptureIndicator(active) {
+    if (!browser.action) {
+        return;
+    }
+
     try {
-        await browser.tabs.sendMessage(tabId, {
-            type: "SCREENLY_HIDE_FEEDBACK"
+        await browser.action.setBadgeText({ text: "" });
+        await browser.action.setTitle({
+            title: active ? "Screenly is capturing" : "Capture Screenshot"
         });
+        if (active) {
+            startLoaderIconAnimation();
+        } else {
+            stopLoaderIconAnimation();
+            await loaderIconUpdatePromise;
+            await setActionIcon(IDLE_ACTION_ICON);
+        }
     } catch (error) {
-        console.warn("Screenly could not hide page feedback", error);
+        console.warn("Screenly could not update capture indicator", error);
+    }
+}
+
+function startLoaderIconAnimation() {
+    stopLoaderIconAnimation();
+    loaderIconRunId += 1;
+    loaderIconFrame = 0;
+    void runLoaderIconAnimation(loaderIconRunId);
+}
+
+function stopLoaderIconAnimation() {
+    loaderIconRunId += 1;
+    if (loaderIconTimeout) {
+        clearTimeout(loaderIconTimeout);
+        loaderIconTimeout = null;
+    }
+}
+
+async function runLoaderIconAnimation(runId) {
+    if (runId !== loaderIconRunId) {
+        return;
+    }
+
+    loaderIconUpdatePromise = setActionIcon(LOADER_ACTION_ICONS[loaderIconFrame]);
+    await loaderIconUpdatePromise;
+
+    if (runId !== loaderIconRunId) {
+        return;
+    }
+
+    loaderIconFrame = (loaderIconFrame + 1) % LOADER_ACTION_ICONS.length;
+    loaderIconTimeout = setTimeout(() => {
+        loaderIconTimeout = null;
+        void runLoaderIconAnimation(runId);
+    }, LOADER_FRAME_MS);
+}
+
+async function setActionIcon(path) {
+    try {
+        await browser.action.setIcon({ path });
+    } catch (error) {
+        stopLoaderIconAnimation();
+        console.warn("Screenly could not update toolbar icon", error);
     }
 }
 

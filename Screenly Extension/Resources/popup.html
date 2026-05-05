@@ -8,13 +8,9 @@
 </head>
 <body>
     <main class="popup">
-        <div class="header">
-            <span class="title">Screenly</span>
-        </div>
-
         <div class="actions" aria-label="Capture actions">
-            <button type="button" class="capture-option primary" data-mode="fullPage">
-                <span>FullPage Screenshot</span>
+            <button type="button" class="capture-option" data-mode="fullPage">
+                <span>Full Page</span>
                 <kbd>⌘⌃1</kbd>
             </button>
             <button type="button" class="capture-option" data-mode="visible">
@@ -23,10 +19,6 @@
             </button>
         </div>
 
-        <div class="status-row">
-            <span id="spinner" class="spinner" aria-hidden="true" hidden></span>
-            <p id="status" class="status" role="status" aria-live="polite"></p>
-        </div>
         <div id="error" class="error" role="alert" hidden>
             <strong id="error-title"></strong>
             <span id="error-detail"></span>

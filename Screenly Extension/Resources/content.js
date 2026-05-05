@@ -319,7 +319,9 @@ function showFeedback(state, message) {
     const host = ensureFeedbackHost();
     const root = host.shadowRoot;
     const panel = root.getElementById("panel");
+    const loadingIcon = root.getElementById("loading-icon");
     const spinner = root.getElementById("spinner");
+    const errorIcon = root.getElementById("error-icon");
     const label = root.getElementById("label");
 
     if (screenlyState.feedbackHideTimer) {
@@ -328,7 +330,9 @@ function showFeedback(state, message) {
     }
 
     panel.className = `panel ${state === "error" ? "error" : "capturing"}`;
+    loadingIcon.hidden = state === "error";
     spinner.hidden = state === "error";
+    errorIcon.hidden = state !== "error";
     label.textContent = message;
     host.hidden = false;
 
@@ -358,7 +362,7 @@ function ensureFeedbackHost() {
     host.style.all = "initial";
     host.style.position = "fixed";
     host.style.left = "50%";
-    host.style.bottom = "22px";
+    host.style.bottom = "24px";
     host.style.transform = "translateX(-50%)";
     host.style.zIndex = "2147483647";
     host.style.pointerEvents = "none";
@@ -371,41 +375,65 @@ function ensureFeedbackHost() {
             }
 
             .panel {
-                min-height: 34px;
+                min-height: 36px;
                 display: inline-flex;
                 align-items: center;
-                gap: 9px;
+                gap: 4px;
                 max-width: min(420px, calc(100vw - 32px));
-                padding: 0 13px;
-                border: 1px solid rgb(0 0 0 / 0.12);
-                border-radius: 17px;
-                background: rgb(246 246 247 / 0.92);
-                color: rgb(28 28 30);
-                font: 13px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-                font-weight: 590;
-                box-shadow: 0 10px 30px rgb(0 0 0 / 0.22);
-                -webkit-backdrop-filter: saturate(180%) blur(18px);
-                backdrop-filter: saturate(180%) blur(18px);
+                padding: 4px 8px 4px 4px;
+                border: 0;
+                border-radius: 999px;
+                background: rgb(255 255 255);
+                color: rgb(0 0 0);
+                font: 14px/20px -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+                font-weight: 510;
+                letter-spacing: 0;
+                box-shadow: 0 8px 12px 12px rgb(246 246 246 / 0.48);
             }
 
-            .panel.error {
-                border-color: rgb(196 40 40 / 0.26);
-                background: rgb(255 242 242 / 0.94);
-                color: rgb(196 40 40);
+            .icon-container {
+                width: 28px;
+                height: 28px;
+                flex: 0 0 auto;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 4px;
+                border-radius: 999px;
+                background: rgb(246 246 246);
+                overflow: hidden;
             }
 
             .spinner {
-                width: 13px;
-                height: 13px;
-                flex: 0 0 auto;
-                border: 2px solid rgb(99 99 102 / 0.22);
-                border-top-color: rgb(10 132 255);
+                width: 16px;
+                height: 16px;
+                border: 2px solid rgb(0 0 0 / 0.14);
+                border-top-color: rgb(0 0 0);
                 border-radius: 50%;
-                animation: screenly-spin 780ms linear infinite;
+                animation: screenly-spin 800ms linear infinite;
             }
 
             .spinner[hidden] {
                 display: none;
+            }
+
+            .icon-container[hidden] {
+                display: none;
+            }
+
+            .error-icon {
+                background: rgb(251 218 218);
+                color: rgb(255 96 92);
+            }
+
+            .error-icon[hidden] {
+                display: none;
+            }
+
+            .error-icon svg {
+                display: block;
+                width: 16px;
+                height: 16px;
             }
 
             .label {
@@ -417,21 +445,23 @@ function ensureFeedbackHost() {
 
             @media (prefers-color-scheme: dark) {
                 .panel {
-                    border-color: rgb(255 255 255 / 0.16);
-                    background: rgb(36 36 38 / 0.90);
-                    color: rgb(242 242 247);
-                    box-shadow: 0 10px 30px rgb(0 0 0 / 0.42);
+                    background: rgb(35 35 37);
+                    color: rgb(245 245 247);
+                    box-shadow: 0 8px 18px 12px rgb(0 0 0 / 0.26);
                 }
 
-                .panel.error {
-                    border-color: rgb(255 105 97 / 0.30);
-                    background: rgb(64 31 31 / 0.92);
-                    color: rgb(255 105 97);
+                .icon-container {
+                    background: rgb(50 50 53);
                 }
 
                 .spinner {
-                    border-color: rgb(174 174 178 / 0.24);
-                    border-top-color: rgb(10 132 255);
+                    border-color: rgb(245 245 247 / 0.22);
+                    border-top-color: rgb(245 245 247);
+                }
+
+                .error-icon {
+                    background: rgb(88 38 38);
+                    color: rgb(255 105 97);
                 }
             }
 
@@ -442,7 +472,16 @@ function ensureFeedbackHost() {
             }
         </style>
         <div id="panel" class="panel capturing">
-            <span id="spinner" class="spinner" aria-hidden="true"></span>
+            <span id="loading-icon" class="icon-container">
+                <span id="spinner" class="spinner" aria-hidden="true"></span>
+            </span>
+            <span id="error-icon" class="icon-container error-icon" aria-hidden="true" hidden>
+                <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2.25L14.25 13H1.75L8 2.25Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                    <path d="M8 6.25V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M8 11.75H8.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+            </span>
             <span id="label" class="label">Capturing</span>
         </div>
     `;
